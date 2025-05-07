@@ -2,10 +2,10 @@ import random
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth import logout
+from django.contrib.auth import logout, login
 from .models import Pokemon, UserPokemon, UserProfile, Message, TradeMessage
 from django.db.models import Count
-from .forms import TeamSelectionForm, MessageForm, TradeForm, AcceptTradeForm
+from .forms import TeamSelectionForm, MessageForm, TradeForm, AcceptTradeForm, SignUpForm
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 
@@ -259,5 +259,16 @@ def get_trade_pokemon_options(request, trade_id):
         ]
     }
     return JsonResponse(data)
+
+def signup(request):
+    if request.method == "POST":
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("index")
+    else:
+        form = SignUpForm()
+    return render(request, "registration/signup.html", {"form": form})
 
 # Create your views here.

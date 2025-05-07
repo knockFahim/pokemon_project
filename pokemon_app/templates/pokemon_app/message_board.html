@@ -309,6 +309,23 @@
     </div>
 </div>
 
+<!-- Trade Notification Modal -->
+<div class="modal fade" id="tradeNotificationModal" tabindex="-1" aria-labelledby="tradeNotificationLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tradeNotificationLabel">Notification</h5>
+      </div>
+      <div class="modal-body" id="tradeNotificationText">
+        <!-- Message will be set by JS -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Okay</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
     // Auto scroll to bottom of message container when page loads
     document.addEventListener("DOMContentLoaded", function () {
@@ -402,6 +419,24 @@
                 form.action = `/trade/accept/${currentTradeId}/`;
                 form.submit();
             });
+
+        // Trade Notification Pop-up
+        {% if messages %}
+            {% for message in messages %}
+                var tradeMsg = "{{ message|escapejs }}";
+                if (tradeMsg.includes("Trade completed successfully")) {
+                    showTradeNotification("The trade is completed successfully");
+                } else if (tradeMsg.includes("couldn't be completed") || tradeMsg.includes("could not be completed")) {
+                    showTradeNotification("The trade couldn't be completed");
+                }
+            {% endfor %}
+        {% endif %}
+
+        function showTradeNotification(text) {
+            var modal = new bootstrap.Modal(document.getElementById('tradeNotificationModal'));
+            document.getElementById('tradeNotificationText').textContent = text;
+            modal.show();
+        }
     });
 </script>
 {% endblock %}

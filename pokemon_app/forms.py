@@ -1,5 +1,7 @@
 from django import forms
 from .models import UserProfile, UserPokemon, Message, Pokemon
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 
 class TeamSelectionForm(forms.Form):
     selected_pokemon = forms.ModelMultipleChoiceField(
@@ -46,3 +48,10 @@ class AcceptTradeForm(forms.Form):
     def __init__(self, user, wanted_type, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['pokemon_id'].queryset = UserPokemon.objects.filter(user=user, pokemon=wanted_type)
+
+class SignUpForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "password1", "password2")

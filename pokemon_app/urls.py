@@ -16,4 +16,5 @@ urlpatterns = [
     path('trade/create/', views.create_trade, name='create_trade'),
     path('trade/accept/<int:trade_id>/', views.accept_trade, name='accept_trade'),
     path('trade/options/<int:trade_id>/', views.get_trade_pokemon_options, name='get_trade_pokemon_options'),
+    path('signup/', views.signup, name='signup'),
 ]
