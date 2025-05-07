@@ -1,0 +1,20 @@
+{% extends 'pokemon_app/base.html' %}
+
+{% block title %}Create Trade Offer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">Create a New Trade Offer</div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Post Trade Offer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

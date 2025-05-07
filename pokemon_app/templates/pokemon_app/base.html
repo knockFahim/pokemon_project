@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{% block title %}Pokémon Collection{% endblock %}</title>
+        <!-- Bootstrap CSS -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <style>
+            body {
+                background-color: #f8f9fa;
+                padding-top: 60px;
+            }
+            .pokemon-card {
+                transition: transform 0.2s;
+                margin-bottom: 20px;
+            }
+            .pokemon-card:hover {
+                transform: scale(1.03);
+            }
+            .pokemon-image {
+                height: 200px;
+                object-fit: contain;
+            }
+            .type-badge {
+                margin-right: 5px;
+            }
+            .type-Normal {
+                background-color: #a8a878;
+                color: white;
+            }
+            .type-Fire {
+                background-color: #f08030;
+                color: white;
+            }
+            .type-Water {
+                background-color: #6890f0;
+                color: white;
+            }
+            .type-Electric {
+                background-color: #f8d030;
+                color: black;
+            }
+            .type-Grass {
+                background-color: #78c850;
+                color: white;
+            }
+            .type-Ice {
+                background-color: #98d8d8;
+                color: black;
+            }
+            .type-Fighting {
+                background-color: #c03028;
+                color: white;
+            }
+            .type-Poison {
+                background-color: #a040a0;
+                color: white;
+            }
+            .type-Ground {
+                background-color: #e0c068;
+                color: black;
+            }
+            .type-Flying {
+                background-color: #a890f0;
+                color: white;
+            }
+            .type-Psychic {
+                background-color: #f85888;
+                color: white;
+            }
+            .type-Bug {
+                background-color: #a8b820;
+                color: white;
+            }
+            .type-Rock {
+                background-color: #b8a038;
+                color: white;
+            }
+            .type-Ghost {
+                background-color: #705898;
+                color: white;
+            }
+            .type-Dragon {
+                background-color: #7038f8;
+                color: white;
+            }
+            /* Message board styles */
+            .message-container {
+                max-height: 600px;
+                overflow-y: auto;
+            }
+            .message-item {
+                border-left: 4px solid #dc3545; /* Red border matching navbar */
+                padding: 10px 15px;
+                margin-bottom: 15px;
+                background-color: white;
+                border-radius: 0.25rem;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            }
+            .message-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 8px;
+            }
+            .message-username {
+                font-weight: bold;
+                color: #dc3545;
+            }
+            .message-timestamp {
+                font-size: 0.85rem;
+                color: #6c757d;
+            }
+            .message-content {
+                word-break: break-word;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-danger fixed-top">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'index' %}"
+                    >Pokémon Collection</a
+                >
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'index' %}"
+                                >Home</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'pokemon_list' %}"
+                                >Pokédex</a
+                            >
+                        </li>
+                        {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'my_pokemon' %}"
+                                >My Pokémon</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'message_board' %}"
+                                >Message Board</a
+                            >
+                        </li>
+                        {% endif %}
+                    </ul>
+                    <ul class="navbar-nav">
+                        {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <span class="nav-link"
+                                >Hello, {{ user.username }}!</span
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/logout/">Logout</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}"
+                                >Login</a
+                            >
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mt-4">
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %} {% block content %}{% endblock %}
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-light py-4 mt-5">
+            <div class="container text-center">
+                <p class="mb-0">
+                    Pokémon is © Nintendo, Game Freak, and The Pokémon Company
+                </p>
+                <p class="mb-0">
+                    This is a fan project for educational purposes only
+                </p>
+            </div>
+        </footer>
+
+        <!-- Bootstrap JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

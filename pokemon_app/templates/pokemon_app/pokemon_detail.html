@@ -1,0 +1,97 @@
+{% extends 'pokemon_app/base.html' %}
+
+{% block title %}{{ pokemon.name }} - Pokémon Details{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="row g-0">
+        <div class="col-md-4">
+            <img src="{{ pokemon.image_url }}" class="img-fluid rounded-start p-3" alt="{{ pokemon.name }}">
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h2 class="card-title">#{{ pokemon.pokedex_id }} {{ pokemon.name }}</h2>
+                <div class="mb-3">
+                    {% for type in pokemon.types.all %}
+                    <span class="badge type-{{ type.name }}">{{ type.name }}</span>
+                    {% endfor %}
+                </div>
+                <p class="card-text">{{ pokemon.description }}</p>
+                
+                <h4>Stats</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Height:</strong> {{ pokemon.height }} m</p>
+                        <p><strong>Weight:</strong> {{ pokemon.weight }} kg</p>
+                        <p><strong>HP:</strong> {{ pokemon.base_hp }}</p>
+                        <p><strong>Attack:</strong> {{ pokemon.base_attack }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Defense:</strong> {{ pokemon.base_defense }}</p>
+                        <p><strong>Special Attack:</strong> {{ pokemon.base_special_attack }}</p>
+                        <p><strong>Special Defense:</strong> {{ pokemon.base_special_defense }}</p>
+                        <p><strong>Speed:</strong> {{ pokemon.base_speed }}</p>
+                    </div>
+                </div>
+                
+                {% if user.is_authenticated and not user_pokemon %}
+                <form action="{% url 'generate_pokemon' %}" method="post" class="mt-3">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Try to Catch One</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if user_pokemon %}
+<h3 class="mb-3">Your {{ pokemon.name }}</h3>
+<div class="row">
+    {% for up in user_pokemon %}
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                {% if up.nickname %}
+                {{ up.nickname }} ({{ pokemon.name }})
+                {% else %}
+                {{ pokemon.name }}
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <p><strong>Level:</strong> {{ up.level }}</p>
+                <p><strong>Captured:</strong> {{ up.capture_date|date:"F j, Y" }}</p>
+                
+                <h5>Stats</h5>
+                <div class="row">
+                    <div class="col-6">
+                        <p>HP: {{ up.hp }}</p>
+                        <p>Attack: {{ up.attack }}</p>
+                        <p>Defense: {{ up.defense }}</p>
+                    </div>
+                    <div class="col-6">
+                        <p>Special Attack: {{ up.special_attack }}</p>
+                        <p>Special Defense: {{ up.special_defense }}</p>
+                        <p>Speed: {{ up.speed }}</p>
+                    </div>
+                </div>
+                
+                <form action="{% url 'nickname_pokemon' up.id %}" method="post" class="mb-2">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" name="nickname" class="form-control" placeholder="Give a nickname" required>
+                        <button type="submit" class="btn btn-outline-primary">Set Nickname</button>
+                    </div>
+                </form>
+                
+                <form action="{% url 'release_pokemon' up.id %}" method="post" onsubmit="return confirm('Are you sure you want to release this Pokémon?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger">Release</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'pokemon_app/base.html' %}
+
+{% block title %}Select Your Team Pokémon{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Select Your Team Pokémon</h1>
+
+<div class="alert alert-info">
+    <p>Choose up to 6 Pokémon from your collection to display on the leaderboard.</p>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+        {% for error in form.non_field_errors %}
+            {{ error }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="row">
+        {% for pokemon in user_pokemon %}
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card pokemon-card h-100">
+                <img src="{{ pokemon.pokemon.image_url }}" class="card-img-top pokemon-image p-3" alt="{{ pokemon.pokemon.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {% if pokemon.nickname %}
+                        {{ pokemon.nickname }} ({{ pokemon.pokemon.name }})
+                        {% else %}
+                        {{ pokemon.pokemon.name }}
+                        {% endif %}
+                    </h5>
+                    <div class="mb-2">
+                        {% for type in pokemon.pokemon.types.all %}
+                        <span class="badge type-{{ type.name }}">{{ type.name }}</span>
+                        {% endfor %}
+                    </div>
+                    <p class="card-text">Level: {{ pokemon.level }}</p>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="selected_pokemon" value="{{ pokemon.id }}" id="pokemon_{{ pokemon.id }}" 
+                        {% if pokemon.id in selected_ids %}checked{% endif %}>
+                        <label class="form-check-label" for="pokemon_{{ pokemon.id }}">
+                            Select for team
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-warning">
+                You don't have any Pokémon yet. <a href="{% url 'generate_pokemon' %}">Generate some Pokémon</a> first!
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Save Team Selection</button>
+        <a href="{% url 'index' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}
+```

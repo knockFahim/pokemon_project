@@ -1,0 +1,26 @@
+{% extends 'pokemon_app/base.html' %}
+
+{% block title %}Pokédex{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Pokédex - Gen 1</h1>
+
+<div class="row">
+    {% for pokemon in pokemon %}
+    <div class="col-md-3 mb-4">
+        <div class="card pokemon-card h-100">
+            <img src="{{ pokemon.image_url }}" class="card-img-top pokemon-image p-3" alt="{{ pokemon.name }}">
+            <div class="card-body">
+                <h5 class="card-title">#{{ pokemon.pokedex_id }} {{ pokemon.name }}</h5>
+                <div class="mb-2">
+                    {% for type in pokemon.types.all %}
+                    <span class="badge type-{{ type.name }}">{{ type.name }}</span>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'pokemon_detail' pokemon.pokedex_id %}" class="btn btn-sm btn-outline-primary">View Details</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

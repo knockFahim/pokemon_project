@@ -1,0 +1,102 @@
+{% extends 'pokemon_app/base.html' %}
+
+{% block title %}Pokémon Collection - Home{% endblock %}
+
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded">
+    <h1 class="display-4">Welcome to Pokémon Collection!</h1>
+    <p class="lead">Collect your favorite Gen 1 Pokémon and build your own collection.</p>
+    
+    {% if user.is_authenticated %}
+    <div class="my-4">
+        <p>You currently have {{ user_pokemon_count }} Pokémon in your collection.</p>
+        <div class="d-flex gap-2">
+            <form action="{% url 'generate_pokemon' %}" method="post" class="me-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-lg">Generate Random Pokémon</button>
+            </form>
+            <a href="{% url 'select_pokemon' %}" class="btn btn-outline-primary btn-lg">Select Team for Leaderboard</a>
+        </div>
+    </div>
+    {% else %}
+    <p class="my-4"><a href="{% url 'login' %}" class="btn btn-primary btn-lg">Login to start collecting</a></p>
+    {% endif %}
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-7">
+        <h2 class="mb-4">Featured Pokémon</h2>
+        <div class="row">
+            {% for pokemon in random_pokemon %}
+            <div class="col-md-6 mb-4">
+                <div class="card pokemon-card h-100">
+                    <img src="{{ pokemon.image_url }}" class="card-img-top pokemon-image p-3" alt="{{ pokemon.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">#{{ pokemon.pokedex_id }} {{ pokemon.name }}</h5>
+                        <div class="mb-2">
+                            {% for type in pokemon.types.all %}
+                            <span class="badge type-{{ type.name }}">{{ type.name }}</span>
+                            {% endfor %}
+                        </div>
+                        <a href="{% url 'pokemon_detail' pokemon.pokedex_id %}" class="btn btn-outline-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="h4 mb-0">Top Trainers</h2>
+                <a href="{% url 'leaderboard' %}" class="btn btn-sm btn-outline-secondary">View All</a>
+            </div>
+            <div class="card-body">
+                {% if profiles %}
+                    {% for profile in profiles %}
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            {% if profile.avatar %}
+                            <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                            {% else %}
+                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                {{ profile.user.username|first|upper }}
+                            </div>
+                            {% endif %}
+                            <h5 class="m-0">{{ profile.user.username }}</h5>
+                        </div>
+                        
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            {% for pokemon in profile.selected_pokemon.all %}
+                            <div class="pokemon-team-icon">
+                                <img src="{{ pokemon.pokemon.image_url }}" alt="{{ pokemon.pokemon.name }}" 
+                                     style="width: 50px; height: 50px; object-fit: contain;"
+                                     data-bs-toggle="tooltip" title="{{ pokemon.pokemon.name }} (Lv. {{ pokemon.level }})">
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <hr>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-info">
+                        <p class="mb-0">No trainers have selected their teams yet. Be the first one!</p>
+                        <a href="{% url 'select_pokemon' %}" class="btn btn-sm btn-primary mt-2">Create Your Team</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    });
+</script>
+{% endblock %}

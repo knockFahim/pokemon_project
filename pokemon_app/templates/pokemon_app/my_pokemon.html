@@ -1,0 +1,72 @@
+{% extends 'pokemon_app/base.html' %}
+
+{% block title %}My Pokémon Collection{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">My Pokémon Collection</h1>
+
+{% if user_pokemon %}
+<div class="mb-4 d-flex justify-content-between align-items-center">
+    <p>You have {{ user_pokemon.count }} Pokémon in your collection.</p>
+    <form action="{% url 'generate_pokemon' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Generate Random Pokémon</button>
+    </form>
+</div>
+
+<div class="row">
+    {% for up in user_pokemon %}
+    <div class="col-md-4 mb-4">
+        <div class="card pokemon-card h-100">
+            <img src="{{ up.pokemon.image_url }}" class="card-img-top pokemon-image p-3" alt="{{ up.pokemon.name }}">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {% if up.nickname %}
+                    {{ up.nickname }} ({{ up.pokemon.name }})
+                    {% else %}
+                    {{ up.pokemon.name }}
+                    {% endif %}
+                </h5>
+                <div class="mb-2">
+                    {% for type in up.pokemon.types.all %}
+                    <span class="badge type-{{ type.name }}">{{ type.name }}</span>
+                    {% endfor %}
+                </div>
+                <p class="card-text">Level: {{ up.level }}</p>
+                <p class="card-text"><small class="text-muted">Caught on {{ up.capture_date|date:"F j, Y" }}</small></p>
+                
+                <div class="mb-2">
+                    <a href="{% url 'pokemon_detail' up.pokemon.pokedex_id %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                </div>
+                
+                <!-- Nickname form -->
+                <form action="{% url 'nickname_pokemon' up.id %}" method="post" class="mb-2">
+                    {% csrf_token %}
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="nickname" class="form-control" placeholder="Give a nickname" required>
+                        <button type="submit" class="btn btn-outline-primary">Set</button>
+                    </div>
+                </form>
+                
+                <!-- Release form -->
+                <form action="{% url 'release_pokemon' up.id %}" method="post" onsubmit="return confirm('Are you sure you want to release {{ up.nickname|default:up.pokemon.name }}?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Release</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<div class="alert alert-info">
+    <p>You don't have any Pokémon yet.</p>
+</div>
+
+<form action="{% url 'generate_pokemon' %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">Generate Your First Pokémon</button>
+</form>
+{% endif %}
+{% endblock %}
